@@ -2,7 +2,11 @@ function vpv(varargin)
 
 cmd='env LD_LIBRARY_PATH= vpv';
 dir=[tempdir 'matlab/'];
+<<<<<<< HEAD
 if isscalar(varargin{1})
+=======
+if nargin > 0 && isscalar(varargin{1})
+>>>>>>> 73ef3368dc160fcf543e2d4a43255c9471898208
     num=varargin{1};
     dir=[dir(1:end-1) '_' num2str(num) '/'];
     cmd=[cmd(1:4) 'WATCH=1 ' cmd(5:end)];
@@ -23,8 +27,19 @@ for i=1:nargin-double(isnumbered)
     if ischar(o)
         cmd=[cmd ' ' o];
     else
-        name=[dir num2str(j) '.tiff'];
-        imwrite_with_tiff(o, name);
+        if size(o, 4) == 1 % image
+            name=[dir num2str(j) '.tiff'];
+            imwrite_with_tiff(o, name);
+        else % video
+            name=[dir num2str(j)];
+            if ~exist(name, 'dir')
+                mkdir(name);
+            end
+            for k=1:size(o,4)
+                imwrite_with_tiff(o(:,:,:,k), [name '/' num2str(k) '.tiff']);
+            end
+        end
+
         cmd=[cmd ' ' name];
         j=j+1;
     end
